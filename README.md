@@ -11,6 +11,7 @@ There is a config file that will be created on first start that allows you to mo
     "dmgModifier": 0.8,  //This is the Damage Multiplier for the Vehicle Damage
     "plyrdmgModifier": 0.8, //This is the Damage Multiplier for the Player Damage
     "mindmg": 1350,  //This is the minimum damage that the vehicle has to take before taking any damage
-    "subtractmindmg": 1 //1 Enabled/0 Disabled if enabled it subtracts the minimum damage from the Vehicle before calculating the damage output
+    "subtractmindmg": 1, //1 Enabled/0 Disabled if enabled it subtracts the minimum damage from the Vehicle before calculating the damage output
+    "logcrashes": 0 //1 Enabled/0 Disabled if enabled it will log all crashes to the script.log file
 }
 ```
