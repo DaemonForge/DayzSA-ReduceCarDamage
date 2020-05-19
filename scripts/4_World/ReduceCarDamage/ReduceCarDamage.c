@@ -16,7 +16,7 @@ modded class CarScript
 		
 		if ( GetGame().IsServer() && zoneName != "")
 		{
-			float dmgMin = 150.0;	//Left this here from encase other mods call super on this mod and use it
+			float dmgMin = 150.0;	
 			float dmgThreshold = 750.0;
 			float dmgKillCrew = 3000.0;
 			float dmg = data.Impulse * m_dmgContactCoef;
@@ -30,24 +30,25 @@ modded class CarScript
 			{
 				dmg = dmg * rcd_dmgModifier;
 			}
-			if (rcd_plyrdmgModifier > 0){
+			if (rcd_plyrdmgModifier > 0){ // Pervent deviding 0 or less
 				dmgKillCrew = dmgKillCrew / rcd_plyrdmgModifier;
 			}
 			
 			if (rcd_orgdmg < rcd_mindmg){
 				//Debug Script
-				if ( rcd_logcrashes ){Print("[ReduceCarDamage] Below Min Crash to zone: " + zoneName + " Org Damage:" + rcd_orgdmg + " below Min Damage: " + rcd_mindmg);}
+				if ( rcd_logcrashes && rcd_orgdmg > dmgMin ){Print("[ReduceCarDamage] " + GetDisplayName() + " crashed at " + GetPosition() + " zone: " + zoneName + " Org Damage:" + rcd_orgdmg + " Below Min Damage Threshold: " + rcd_mindmg);}
 				
 			}
 			else if ( dmg < dmgThreshold) //Low Speed Crash
 			{					
 					//Debug Script
-					if ( rcd_logcrashes ){Print("[ReduceCarDamage] Low Speed Crash to zone: " + zoneName + " Org Damage:" + rcd_orgdmg + " New Damage:" + dmg + " below Low Speed Threshold: " + dmgThreshold);}
+					if ( rcd_logcrashes ){Print("[ReduceCarDamage]  " + GetDisplayName() + " crashed at " + GetPosition() + " zone: " + zoneName + " Org Damage:" + rcd_orgdmg + " New Damage:" + dmg + " Below Low Speed Threshold: " + dmgThreshold);}
 					AddHealth( zoneName, "Health", -dmg);
 					SynchCrashLightSound( true );
 			}
 			else
 			{
+				if ( rcd_logcrashes ){Print("[ReduceCarDamage] " + GetDisplayName() + " crashed at " + GetPosition() + " zone:  " + zoneName + " Org Damage:" + rcd_orgdmg + " New Damage:" + dmg + " Above Low Speed Threshold: " + dmgThreshold);}		
 				for( int i =0; i < CrewSize(); i++ )
 				{
 					Human crew = CrewMember( i );
@@ -59,9 +60,7 @@ modded class CarScript
 					{
 						if ( dmg > dmgKillCrew )
 						{		
-							if ( rcd_logcrashes ){Print("[ReduceCarDamage] High Speed Crash to zone: " + zoneName + " Org Damage:" + rcd_orgdmg + " New Damage:" + dmg + " below Above Death Threshold: " + dmgKillCrew);}
-							player.SetHealth(0.0);
-							
+							player.SetHealth(0.0);	
 						}
 						else
 						{
@@ -70,7 +69,6 @@ modded class CarScript
 							float shock = Math.Lerp( 50, 100, shockTemp );
 							float hp = Math.Lerp( 2, 60, shockTemp ) * rcd_plyrdmgModifier;
 							
-							if ( rcd_logcrashes ){Print("[ReduceCarDamage] High Speed Crash to zone: " + zoneName + " Org Damage:" + rcd_orgdmg + " New Damage:" + dmg + " Above Low Speed Threshold: " + dmgThreshold);}
 							player.AddHealth("", "Shock", -shock );
 							player.AddHealth("", "Health", -hp );
 						}
