@@ -11,6 +11,7 @@ class ReduceCarDamageSettings
 	float plyrdmgModifier = 0.8;
 	float mindmg = 1350;
 	bool subtractmindmg = true;
+	bool logcrashes = false;
 
     static ref ReduceCarDamageSettings Get()
     {

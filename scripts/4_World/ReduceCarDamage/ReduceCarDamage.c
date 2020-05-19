@@ -2,6 +2,7 @@ modded class CarScript
 {
 	override void OnContact( string zoneName, vector localPos, IEntity other, Contact data )
 	{
+		bool rcd_logcrashes = ReduceCarDamageSettings.Get().logcrashes;
 		float rcd_dmgModifier = ReduceCarDamageSettings.Get().dmgModifier;
 		float rcd_plyrdmgModifier = ReduceCarDamageSettings.Get().plyrdmgModifier;
 		float rcd_mindmg = ReduceCarDamageSettings.Get().mindmg;
@@ -29,18 +30,19 @@ modded class CarScript
 			{
 				dmg = dmg * rcd_dmgModifier;
 			}
-			
-			
-			if (rcd_orgdmg <= rcd_mindmg){
-				dmg = 0;
-				return;
-				//Debug Script
-				//Print("[ReduceCarDamage] crash damage below rcd_mindmg damage");
+			if (rcd_plyrdmgModifier > 0){
+				dmgKillCrew = dmgKillCrew / rcd_plyrdmgModifier;
 			}
-			else if ( dmg < dmgThreshold ) //Low Speed Crash
+			
+			if (rcd_orgdmg < rcd_mindmg){
+				//Debug Script
+				if ( rcd_logcrashes ){Print("[ReduceCarDamage] Below Min Crash to zone: " + zoneName + " Org Damage:" + rcd_orgdmg + " below Min Damage: " + rcd_mindmg);}
+				
+			}
+			else if ( dmg < dmgThreshold) //Low Speed Crash
 			{					
 					//Debug Script
-					//Print("[ReduceCarDamage] Low Speed Crash");
+					if ( rcd_logcrashes ){Print("[ReduceCarDamage] Low Speed Crash to zone: " + zoneName + " Org Damage:" + rcd_orgdmg + " New Damage:" + dmg + " below Low Speed Threshold: " + dmgThreshold);}
 					AddHealth( zoneName, "Health", -dmg);
 					SynchCrashLightSound( true );
 			}
@@ -57,7 +59,9 @@ modded class CarScript
 					{
 						if ( dmg > dmgKillCrew )
 						{		
+							if ( rcd_logcrashes ){Print("[ReduceCarDamage] High Speed Crash to zone: " + zoneName + " Org Damage:" + rcd_orgdmg + " New Damage:" + dmg + " below Above Death Threshold: " + dmgKillCrew);}
 							player.SetHealth(0.0);
+							
 						}
 						else
 						{
@@ -65,7 +69,8 @@ modded class CarScript
 							float shockTemp = Math.InverseLerp(dmgThreshold, dmgKillCrew, dmg);
 							float shock = Math.Lerp( 50, 100, shockTemp );
 							float hp = Math.Lerp( 2, 60, shockTemp ) * rcd_plyrdmgModifier;
-
+							
+							if ( rcd_logcrashes ){Print("[ReduceCarDamage] High Speed Crash to zone: " + zoneName + " Org Damage:" + rcd_orgdmg + " New Damage:" + dmg + " Above Low Speed Threshold: " + dmgThreshold);}
 							player.AddHealth("", "Shock", -shock );
 							player.AddHealth("", "Health", -hp );
 						}
