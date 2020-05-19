@@ -15,7 +15,7 @@ modded class CarScript
 		
 		if ( GetGame().IsServer() && zoneName != "")
 		{
-			float dmgMin = 150.0;	
+			float dmgMin = 150.0;	//Left this here from encase other mods call super on this mod and use it
 			float dmgThreshold = 750.0;
 			float dmgKillCrew = 3000.0;
 			float dmg = data.Impulse * m_dmgContactCoef;
@@ -34,16 +34,15 @@ modded class CarScript
 			if (rcd_orgdmg <= rcd_mindmg){
 				dmg = 0;
 				return;
-				Print("[ReduceCarDamage] crash damage below min damage");
+				//Debug Script
+				//Print("[ReduceCarDamage] crash damage below rcd_mindmg damage");
 			}
-			else if ( dmg < dmgThreshold )
+			else if ( dmg < dmgThreshold ) //Low Speed Crash
 			{					
-				if ( dmg > dmgMin )
-				{
-					Print("[ReduceCarDamage] crash damage below min damage");
+					//Debug Script
+					//Print("[ReduceCarDamage] Low Speed Crash");
 					AddHealth( zoneName, "Health", -dmg);
 					SynchCrashLightSound( true );
-				}
 			}
 			else
 			{
@@ -73,7 +72,6 @@ modded class CarScript
 					}
 				}
 
-				//m_PlayCrashSoundHeavy = true;
 				SynchCrashHeavySound( true );
 				ProcessDirectDamage( DT_CUSTOM, null, zoneName, "EnviroDmg", "0 0 0", dmg );
 			}
